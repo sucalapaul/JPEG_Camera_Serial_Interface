@@ -39,9 +39,11 @@ using namespace cv;
 int main() {
 	printf("Started\n"); /* prints !!!Hello World!!! */
 	setbuf(stdout, NULL);			//no delay for stdout
+	int have_cameras = 1;
 
 	if (cameras_init()) {
-		return 0;
+		have_cameras = 0;
+		//return 0;
 	}
 
 	take_picture_r = 1;
@@ -68,16 +70,18 @@ int main() {
 	gettimeofday(&tv, NULL);
 	long start = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
 
-	pthread_create(&(tid[0]), NULL, &cameras_captureImage_r, (void *) &thread_data_r);
-	pthread_create(&(tid[1]), NULL, &cameras_captureImage_l, (void *) &thread_data_l);
+	if (have_cameras)
+	{
+		pthread_create(&(tid[0]), NULL, &cameras_captureImage_r, (void *) &thread_data_r);
+		pthread_create(&(tid[1]), NULL, &cameras_captureImage_l, (void *) &thread_data_l);
 
-//        if (err != 0)
-//            printf("\ncan't create thread ");
-//        else
-//            printf("\n Thread created successfully\n");
-
-	pthread_join(tid[0], (void**)&(ptr[0]));
-	pthread_join(tid[1], (void**)&(ptr[1]));
+		pthread_join(tid[0], (void**)&(ptr[0]));
+		pthread_join(tid[1], (void**)&(ptr[1]));
+	}
+	else
+	{
+		printf("Processing without cameras");
+	}
 
 	gettimeofday(&tv, NULL);
 	long now = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
