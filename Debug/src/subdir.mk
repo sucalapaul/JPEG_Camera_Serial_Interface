@@ -6,6 +6,7 @@
 CPP_SRCS += \
 ../src/cameras.cpp \
 ../src/main.cpp \
+../src/robot.cpp \
 ../src/stereo.cpp 
 
 C_SRCS += \
@@ -17,6 +18,7 @@ OBJS += \
 ./src/cameras.o \
 ./src/jpeg_camera.o \
 ./src/main.o \
+./src/robot.o \
 ./src/rs232.o \
 ./src/stereo.o \
 ./src/utils.o 
@@ -29,6 +31,7 @@ C_DEPS += \
 CPP_DEPS += \
 ./src/cameras.d \
 ./src/main.d \
+./src/robot.d \
 ./src/stereo.d 
 
 

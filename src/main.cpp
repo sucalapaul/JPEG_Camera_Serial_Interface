@@ -22,6 +22,7 @@
 #include "jpeg_camera.h"
 #include "rs232.h"
 #include "stereo.h"
+#include "robot.h"
 #include <sys/time.h>
 
 //extern "C" {
@@ -37,6 +38,7 @@ using namespace cv;
 int main() {
 
 	int have_cameras = 1;
+	int have_robot = 1;
 	int err;
 	int *ptr[3];
 	struct timeval tv;
@@ -49,12 +51,18 @@ int main() {
 
 	if (cameras_init()) {
 		//error in camera initialization
+		printf("\nCameras not connected!\n");
 		have_cameras = 0;
 		//return 0;
 	}
 
 	//Robot serial port init
-	//TODO: Robot serial port init
+	if (Robot_Init()) {
+		//error in STM32 serial initialization
+		printf("\nSTM32 serial not connected!\n");
+		have_robot = 0;
+		//return 0;
+	}
 
 	printf("Init done\n\n");
 
