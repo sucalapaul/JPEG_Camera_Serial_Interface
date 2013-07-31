@@ -53,46 +53,73 @@ int main() {
 	process_ready = 0;
 
 	thdata thread_data_r, thread_data_l;
-	//thdata.
-	//thdata_process thread_data_process;
-//	thread_data_r.picture_ready = &picture_ready_r;
-//	thread_data_r.take_picture = &take_picture_r;
-//	thread_data_l.picture_ready = &picture_ready_l;
-//	thread_data_l.take_picture = &take_picture_l;
-
-	//thread_data_process.picture_ready
 
 	int err;
 	int *ptr[3];
 
 	struct timeval tv;
 
-	gettimeofday(&tv, NULL);
-	long start = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
+	int count = 0;
 
-	if (have_cameras)
-	{
-		pthread_create(&(tid[0]), NULL, &cameras_captureImage_r, (void *) &thread_data_r);
-		pthread_create(&(tid[1]), NULL, &cameras_captureImage_l, (void *) &thread_data_l);
+	printf("Init done\n");
+	while (1) {
 
-		pthread_join(tid[0], (void**)&(ptr[0]));
-		pthread_join(tid[1], (void**)&(ptr[1]));
+		printf("Press Enter to capture a new frame...\n");
+		getchar();
+
+		gettimeofday(&tv, NULL);
+		long start = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
+
+		if (have_cameras) {
+			pthread_create(&(tid[0]), NULL, &cameras_captureImage_r,
+					(void *) &thread_data_r);
+			pthread_create(&(tid[1]), NULL, &cameras_captureImage_l,
+					(void *) &thread_data_l);
+
+			pthread_join(tid[0], (void**) &(ptr[0]));
+			pthread_join(tid[1], (void**) &(ptr[1]));
+		} else {
+			printf("Processing without cameras");
+		}
+
+		gettimeofday(&tv, NULL);
+		long now = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
+		printf("capture lasted %d ms\n", now - start);
+
+		err = pthread_create(&(tid[2]), NULL, &stereo_process, NULL);
+		pthread_join(tid[2], (void**) &(ptr[2]));
+
+		gettimeofday(&tv, NULL);
+		long now2 = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
+		printf("processing lasted %d ms\n", now2 - now);
+
+		char command[100];
+		if (count < 10) {
+			sprintf(command,
+					"echo \"copying...\" \n\
+					cp img_left.jpg left0%d.jpg \n\
+				    cp img_right.jpg right0%d.jpg \n\
+					echo \"done\" \n",
+					count, count);
+		} else {
+			sprintf(command,
+					"echo \"copying...\" \n\
+					cp img_left.jpg left%d.jpg \n\
+					cp img_right.jpg right%d.jpg \n\
+					echo \"done\" \n",
+					count, count);
+		}
+		//return 1;
+		system(command);
+
+		printf("press esc to take a new picture, any key to save\n");
+		char c = getchar();
+		if ((char) c != 97)
+		{
+			count ++;
+		}
+
 	}
-	else
-	{
-		printf("Processing without cameras");
-	}
-
-	gettimeofday(&tv, NULL);
-	long now = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
-	printf("capture lasted %d ms\n", now - start);
-
-	err = pthread_create(&(tid[2]), NULL, &stereo_process, NULL);
-	pthread_join(tid[2], (void**) &(ptr[2]));
-
-	gettimeofday(&tv, NULL);
-	long now2 = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
-	printf("processing lasted %d ms\n", now2 - now);
 
 //	while (1) {
 //		int c = cvWaitKey(10);

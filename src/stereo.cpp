@@ -339,7 +339,7 @@ void *stereo_process(void *arg) {
 
 		trackCircles(frame_l, frame_orig_l, type_l, center_l);
 		trackObject(frame_l, frame_orig_l, type_l, center_l);
-		imshow("Result_l", frame_orig_l);
+		//imshow("Result_l", frame_orig_l);
 
 		//fclose(pf_l);
 
@@ -349,7 +349,7 @@ void *stereo_process(void *arg) {
 
 		trackCircles(frame_r, frame_orig_r, type_r, center_r);
 		trackObject(frame_r, frame_orig_r, type_r, center_r);
-		imshow("Result_r", frame_orig_r);
+		//imshow("Result_r", frame_orig_r);
 
 		//////////////////////////////////////////////////////////////////////////
 
@@ -393,8 +393,8 @@ void *stereo_process(void *arg) {
 
 	//trackObject(frame, frame_orig);
 
-	imshow("Original_l", frame_l);
-	imshow("Original_r", frame_r);
+	//imshow("Original_l", frame_l);
+	//imshow("Original_r", frame_r);
 	//imshow("Result", frame_orig);
 
 

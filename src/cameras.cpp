@@ -102,6 +102,7 @@ void *cameras_captureImage_r(void *arg) {
 		}
 
 		fclose(fp);
+		JPEGCamera_stopPictures(camera_port, response);
 		printf("Image acquired.");
 		sprintf(command,
 				"echo \"copying...\" \n\
@@ -193,6 +194,7 @@ void *cameras_captureImage_l(void *arg) {
 		}
 
 		fclose(fp);
+		JPEGCamera_stopPictures(camera_port, response);
 		printf("Image acquired.");
 		sprintf(command,
 				"echo \"copying...\" \n\
