@@ -334,69 +334,70 @@ void *stereo_process(void *arg) {
 
 	int c = cvWaitKey(10);
 
+	FILE *pf = fopen("objects.txt", "w");
 
-		FILE *pf = fopen("objects.txt", "w");
+	trackCircles(frame_l, frame_orig_l, type_l, center_l);
+	trackObject(frame_l, frame_orig_l, type_l, center_l);
+	imshow("Result_l", frame_orig_l);
 
-		trackCircles(frame_l, frame_orig_l, type_l, center_l);
-		trackObject(frame_l, frame_orig_l, type_l, center_l);
-		imshow("Result_l", frame_orig_l);
+	//fclose(pf_l);
 
-		//fclose(pf_l);
+	imwrite("left.jpg", frame_orig_l);
 
-		imwrite("left.jpg", frame_orig_l);
+	//FILE *pf_r=fopen("objects_r.txt","w");
 
-		//FILE *pf_r=fopen("objects_r.txt","w");
+	trackCircles(frame_r, frame_orig_r, type_r, center_r);
+	trackObject(frame_r, frame_orig_r, type_r, center_r);
+	imshow("Result_r", frame_orig_r);
 
-		trackCircles(frame_r, frame_orig_r, type_r, center_r);
-		trackObject(frame_r, frame_orig_r, type_r, center_r);
-		imshow("Result_r", frame_orig_r);
+	//////////////////////////////////////////////////////////////////////////
 
-		//////////////////////////////////////////////////////////////////////////
+	double qu[4][4] = { { 1., 0., 0., -2.1951644134521484e+02 }, { 0., 1., 0.,
+			-1.0995639705657959e+02 }, { 0., 0., 0., 3.1004862380124985e+02 }, {
+			0., 0., 1.1079426723476694e-01, 2.3843288178930724e+00 } };
 
-		double qu[4][4] = { { 1.0, 0.0, 0.0, -1.0384888534545898e+03 }, { 0.0,
-				1.0, 0.0, -8.9958347320556641e+01 }, { 0.0, 0.0, 0.0,
-				9.8627901063924435e+02 }, { 0.0, 0.0, 1.5284315798247780e-01,
-				2.9219960278349775e+00 } };
+	/*{ { 1.0, 0.0, 0.0, -1.0384888534545898e+03 }, { 0.0,
+	 1.0, 0.0, -8.9958347320556641e+01 }, { 0.0, 0.0, 0.0,
+	 9.8627901063924435e+02 }, { 0.0, 0.0, 1.5284315798247780e-01,
+	 2.9219960278349775e+00 } };*/
 
-		if (center_l.size() > center_r.size())
-			type_l = type_r;
+	if (center_l.size() > center_r.size())
+		type_l = type_r;
 
-		for (int i = 0; i < min(center_l.size(), center_r.size()); i++) {
+	for (int i = 0; i < min(center_l.size(), center_r.size()); i++) {
 
-			int d = center_r.at(i).x - center_l.at(i).x;
+		int d = center_r.at(i).x - center_l.at(i).x;
 
-			double X = center_l.at(i).x * qu[0][0] + qu[0][3];
+		double X = center_l.at(i).x * qu[0][0] + qu[0][3];
 
-			double Y = center_l.at(i).y * qu[1][1] + qu[1][3];
-			double Z = qu[2][3];
-			double W = d * qu[3][2] + qu[3][3];
+		double Y = center_l.at(i).y * qu[1][1] + qu[1][3];
+		double Z = qu[2][3];
+		double W = d * qu[3][2] + qu[3][3];
 
-			X = X / W;
-			Y = Y / W;
-			Z = Z / W;
+		X = X / W;
+		Y = Y / W;
+		Z = Z / W;
 
-			int mR = frame_orig_l.at<Vec3b>(center_l.at(i).y,
-					center_l.at(i).x + 5)[2];
-			int mG = frame_orig_l.at<Vec3b>(center_l.at(i).y,
-					center_l.at(i).x + 5)[1];
-			int mB = frame_orig_l.at<Vec3b>(center_l.at(i).y,
-					center_l.at(i).x + 5)[0];
-			char* color = getColor(mR, mG, mB);
+		int mR =
+				frame_orig_l.at<Vec3b>(center_l.at(i).y, center_l.at(i).x + 5)[2];
+		int mG =
+				frame_orig_l.at<Vec3b>(center_l.at(i).y, center_l.at(i).x + 5)[1];
+		int mB =
+				frame_orig_l.at<Vec3b>(center_l.at(i).y, center_l.at(i).x + 5)[0];
+		char* color = getColor(mR, mG, mB);
 
-			printf("X: %d  Y: %d   Z: %d\n", (int) X, (int) Y, (int) Z);
-			writeFile(pf, type_l.at(i), color, X, Y);
-		}
-		fclose(pf);
+		printf("X: %d  Y: %d   Z: %d\n", (int) X, (int) Y, (int) Z);
+		writeFile(pf, type_l.at(i), color, X, Y);
+	}
+	fclose(pf);
 
-		imwrite("right.jpg", frame_orig_r);
-
+	imwrite("right.jpg", frame_orig_r);
 
 	//trackObject(frame, frame_orig);
 
 	imshow("Original_l", frame_l);
 	imshow("Original_r", frame_r);
 	//imshow("Result", frame_orig);
-
 
 	printf("\nProcessing done.\n");
 
