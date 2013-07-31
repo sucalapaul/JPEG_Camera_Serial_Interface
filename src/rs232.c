@@ -130,8 +130,8 @@ int RS232_OpenComport(int comport_number, int baudrate, int should_block)
     return(1);
   }
 
-  printf("\n Cport[comport_number]:%d \n", Cport[comport_number]);
-  printf("\n comport: %s \n", comports[comport_number]);
+
+  printf("comport: %s \n", comports[comport_number]);
 
   error = tcgetattr(Cport[comport_number], old_port_settings + comport_number);
   if(error==-1)

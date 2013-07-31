@@ -25,7 +25,6 @@ const int read_size=4064;
 //Initialize the serial connection
 int JPEGCamera_begin(int port, int baud)
 {
-	//Camera baud rate is 38400
 	//TODO: set baud using System();
 	if(RS232_OpenComport(port, baud, 1))
 	{
@@ -48,13 +47,7 @@ int JPEGCamera_getSize(int port, char * response, unsigned int * size)
 	//Send the GET_SIZE command string to the camera
 	count = JPEGCamera_sendCommand(port, GET_SIZE, response, 5);
 	//Read 4 characters from the camera and add them to the response string
-//VC070ÿÿÿ\226\021å·ô/ü·%\022å·
-//VC0703 1.\021å·ô/ü·%
 
-	//while(  != 0 );
-	//char bufff[100];
-	//\005\0\0\0g\216\004\b\005\0\0\0I
-	//3 1.g\216\004\b\005
 
 	int count2 = 0;
 
@@ -68,6 +61,7 @@ int JPEGCamera_getSize(int port, char * response, unsigned int * size)
 
 	//Set the number of characters to return
 	count+=4;
+
 	//The size is in the last 2 characters of the response.
 	//Parse them and convert the characters to an integer
     *size = (unsigned char)response[count-2]*256;
@@ -91,6 +85,7 @@ int JPEGCamera_flush(int port, char * response)
 {
 	return RS232_PollComport(port, response, 100);
 }
+
 //Take a new picture
 //pre: response is an empty string
 //post: response contains the cameras response to the TAKE_PICTURE command
@@ -105,8 +100,8 @@ int JPEGCamera_Set_Resolution_320(int port, char * response)
 {
 	RS232_SendBuf(port, SET_RESOLUTION_320, 9);
 	return RS232_PollComport_exact(port, response, 5);
-	//return JPEGCamera_sendCommand(port, SET_RESOLUTION_320, response, 5);
 }
+
 int JPEGCamera_SetMaxBaud(int port, char * response)
 {
 	RS232_SendBuf(port, SET_MAX_BAUD, 7);
@@ -143,9 +138,8 @@ int JPEGCamera_readData(int port, char * response, int address)
 	char degeaba[100];
 
 	//Flush out any data currently in the serial buffer
-	//cameraPort.flush();
 
-	//if received frame was incomplete, retry
+	//If received frame was incomplete, retry
 	do
 	{
 		error = 0;
@@ -157,7 +151,6 @@ int JPEGCamera_readData(int port, char * response, int address)
 		//Send the command to get read_size bytes of data from the current address
 		for(int i=0; i<8; i++)
 		{
-			//ameraPort.print(READ_DATA[i]);
 			RS232_SendByte(port, READ_DATA1[i]);
 		}
 
@@ -171,9 +164,6 @@ int JPEGCamera_readData(int port, char * response, int address)
 		RS232_SendByte(port, 0x0A);
 
 		//Read the response header.
-
-
-		//usleep(30000);
 		sss = RS232_PollComport_exact(port, response, 5);
 		if (sss != 5){
 			error = 1;
@@ -185,19 +175,12 @@ int JPEGCamera_readData(int port, char * response, int address)
 			error = 1;
 		}
 
-
+		//Read the response footer.
 		sss = RS232_PollComport(port, degeaba, 10);
 		if (sss != 5){
 			//error = 1;
 		}
 	} while (error == 1);
-
-//	while(count < read_size)
-//	{
-//		while(!cameraPort.available());
-//		*response++=cameraPort.read();
-//		count+=1;
-//	}
 
 	//Return the number of characters in the response.
 	return count;

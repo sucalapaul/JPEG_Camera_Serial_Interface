@@ -13,7 +13,6 @@
 	typedef struct str_thdata
 	{
 		int thread_no;
-		//char message[100];
 		int *take_picture;
 		int *picture_ready;
 	} thdata;

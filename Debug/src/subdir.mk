@@ -10,18 +10,21 @@ CPP_SRCS += \
 
 C_SRCS += \
 ../src/jpeg_camera.c \
-../src/rs232.c 
+../src/rs232.c \
+../src/utils.c 
 
 OBJS += \
 ./src/cameras.o \
 ./src/jpeg_camera.o \
 ./src/main.o \
 ./src/rs232.o \
-./src/stereo.o 
+./src/stereo.o \
+./src/utils.o 
 
 C_DEPS += \
 ./src/jpeg_camera.d \
-./src/rs232.d 
+./src/rs232.d \
+./src/utils.d 
 
 CPP_DEPS += \
 ./src/cameras.d \

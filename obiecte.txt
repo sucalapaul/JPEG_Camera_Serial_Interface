@@ -1,0 +1,8 @@
+cerc,alb,4,3.
+patrat,negru,-2,7.
+cerc,negru,4,5.
+cerc,alb,1,2.
+cerc,alb,4,7.
+patrat,alb,2,3.
+patrat,negru,9,10.
+patrat,alb,1,1.
