@@ -6,3 +6,4 @@ cerc,alb,4,7.
 patrat,alb,2,3.
 patrat,negru,9,10.
 patrat,alb,1,1.
+patrat,negru,1,6.

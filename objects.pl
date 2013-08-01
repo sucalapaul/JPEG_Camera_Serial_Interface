@@ -5,19 +5,20 @@ program:-
 	process('preferinte.txt',Obj),
 	process('obiecte.txt',X),
 	process('contor.txt',Cont),
-	%print_list(Obj),
+	print_list(Obj),
 	getElemente(Obj,O,C),
 	(O == 0, getObiecteCuloare(C,X,R1),! ;
 	C == 0,getObiecte(O,X,R1),! ;
 	getObiecteOC(O,C,X,R1)),
 	goObiect(R1,R),
 	getFirst(Cont,Cout),
-	(not(vida(R)),
+	((not(vida(R)),!,
 		write_list_to_file('comanda.txt',R),
-		write_list_to_file('contor.txt',[0]) ;
-	vida(R),(Cout < 7,Cout1 is Cout+1,
+		write_list_to_file('contor.txt',[0])) ;
+	(vida(R),(Cout < 7,!,Cout1 is Cout+1,
 		write_list_to_file('comanda.txt',R),
-		write_list_to_file('contor.txt',[Cout1]))).
+		write_list_to_file('contor.txt',[Cout1])))),
+	halt.
 
 
 %%%%%%%
@@ -54,7 +55,7 @@ loop_through_list(F,[N|[]]) :-
 loop_through_list(F,[]) :-
     write(F,'0'),
     write(F,' '),
-    write(F,'5').
+    write(F,'0,2').
 
 loop_through_list(F,(_,_,X,Y)) :-
     write(F,X),
@@ -114,13 +115,18 @@ isObject((Obiect,_,_,_),Obiect).
 
 goObiect([],R,R,_,_).
 goObiect([(O,C,X,Y)|T],R,Rez,XX,YY):-
-	X=<XX,Y=<YY,!,
+	inverse(X,Kr),inverse(XX,Krr),Kr=<Krr,Y=<YY,!,
 	goObiect(T,(O,C,X,Y),Rez,X,Y).
 goObiect([_|T],R,Rez,X,Y):-
 	goObiect(T,R,Rez,X,Y).
 goObiect(L,R):-
 	goObiect(L,[],R,1000,1000).
 
+%Inversam semnul lui X
+inverse(X,R):-
+	X<0,
+	R is (-1)*X.
+inverse(X,X).
 
 %Ia primul si ultimul element
 %%%%%%%%

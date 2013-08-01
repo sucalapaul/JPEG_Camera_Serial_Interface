@@ -49,18 +49,20 @@ int main() {
 	printf("Started\n");
 	setbuf(stdout, NULL); //no delay for stdout
 
-	if (cameras_init()) {
-		//error in camera initialization
-		printf("\nCameras not connected!\n");
-		have_cameras = 0;
-		//return 0;
-	}
-
 	//Robot serial port init
 	if (Robot_Init()) {
 		//error in STM32 serial initialization
 		printf("\nSTM32 serial not connected!\n");
 		have_robot = 0;
+		//return 0;
+	}
+
+	Robot_SendTarget(150., 10.);
+
+	if (cameras_init()) {
+		//error in camera initialization
+		printf("\nCameras not connected!\n");
+		have_cameras = 0;
 		//return 0;
 	}
 
@@ -104,19 +106,28 @@ int main() {
 		printf("Image processing lasted %d ms\n", now2 - now);
 
 		//Call prolog program
-		//system("./objects");
+		printf("\nRunning prolog program...\n");
+		system("./objects");
 
 		//Run time for prolog
 		gettimeofday(&tv, NULL);
 		long now3 = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
 		printf("Prolog lasted %d ms\n", now3 - now2);
 
+
+		//TODO:read data from file exorted by prolog
+		//comanda.txt  ->> X >> Y
+
+
 		//Send the command to robot
-		//TODO: Send the command to robot
+		//TODO: Send the command to robot, X, Y
 
 
 		//Wait for response from robot
 		//TODO: Wait for response from robot
+		//int asdjnoas = Robot_WaitResponse();
+
+		//procesezi raspunsu
 	}
 
 	return 0;
