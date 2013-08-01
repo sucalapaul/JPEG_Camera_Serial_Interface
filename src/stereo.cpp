@@ -7,6 +7,7 @@
 
 #include <cv.h>
 #include <highgui.h>
+#include <opencv2/gpu/gpu.hpp>
 #include <math.h>
 #include <list>
 #include <vector>
@@ -280,15 +281,15 @@ void trackCircles(Mat frame, Mat &frame_orig, vector<char*> &type,
 	//convert it to gray
 	cvtColor(frame, frame, CV_BGR2GRAY);
 
-	int erosion_size = 3;
-	cv::Mat element = cv::getStructuringElement(cv::MORPH_CROSS,
-			cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
-			cv::Point(erosion_size, erosion_size));
+//	int erosion_size = 3;
+//	cv::Mat element = cv::getStructuringElement(cv::MORPH_CROSS,
+//			cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
+//			cv::Point(erosion_size, erosion_size));
 
 //	erode(frame, frame, element);
 //	dilate(frame, frame, element);
 	//Canny(frame, frame, 5, 70, 3);
-	imwrite("canny.jpg", frame);
+//	imwrite("canny.jpg", frame);
 	//(frame, frame, cv.CV_GAUSSIAN, 15, 15)
 
 	//reduce noise
