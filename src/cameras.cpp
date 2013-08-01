@@ -237,6 +237,8 @@ int cameras_init() {
 	count = JPEGCamera_reset(camera_port_r, response);
 	count = JPEGCamera_reset(camera_port_l, response);
 	usleep(500000);
+	RS232_FlushComport(camera_port_r);
+	RS232_FlushComport(camera_port_l);
 
 	///// NOW CAMERAS ARE AT 38400 baud
 
