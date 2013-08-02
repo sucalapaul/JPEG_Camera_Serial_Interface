@@ -276,7 +276,7 @@ void determineMediumColorCircle(Point center, int radius, Mat &frame_orig,
 }
 
 void trackCircles(Mat frame, Mat &frame_orig, vector<char*> &type,
-		vector<CvPoint> &centerT) {
+		vector<CvPoint> &centerT, vector<int> &rad) {
 
 	//convert it to gray
 	cvtColor(frame, frame, CV_BGR2GRAY);
@@ -297,7 +297,7 @@ void trackCircles(Mat frame, Mat &frame_orig, vector<char*> &type,
 
 	//apply the Hough Transform to find circles
 	vector<Vec3f> circles;
-	HoughCircles(frame, circles, CV_HOUGH_GRADIENT, 1, frame.rows / 8, 70, 45,
+	HoughCircles(frame, circles, CV_HOUGH_GRADIENT, 1, frame.rows / 8, 70, 35,
 			10, 0);
 
 	// Draw the circles detected
@@ -311,6 +311,7 @@ void trackCircles(Mat frame, Mat &frame_orig, vector<char*> &type,
 		int radius = cvRound(circles[i][2]);
 
 		centerT.push_back(center);
+		rad.push_back(radius);
 
 		char* color;
 		int colorDeviation;
@@ -328,12 +329,60 @@ void trackCircles(Mat frame, Mat &frame_orig, vector<char*> &type,
 	//}
 }
 
+void realCircles(vector<CvPoint> &center_l, vector<CvPoint> &center_r, vector<int> &rad_l, vector<int> &rad_r, Mat left, Mat right){
+	vector<CvPoint> final_l;
+	vector<CvPoint> final_r;
+	vector<int> radius_l;
+	vector<int> radius_r;
+
+	for (std::vector<int>::size_type i = 0; i != center_l.size(); i++){
+		for (std::vector<int>::size_type j = 0; j != center_r.size(); j++){
+
+			if (center_l[i].x>center_r[j].x-50
+					&& center_l[i].x<center_r[j].x+50){
+				final_l.push_back(center_l[i]);
+				final_r.push_back(center_r[j]);
+				radius_l.push_back(rad_l[i]);
+				radius_r.push_back(rad_r[j]);
+			}
+		}
+	}
+
+
+
+
+	center_l.clear();
+	center_r.clear();
+	center_l=final_l;
+	center_r=final_r;
+	rad_l.clear();
+	rad_r.clear();
+	rad_l = radius_l;
+	rad_r = radius_r;
+
+
+
+	for (std::vector<int>::size_type i = 0; i != center_l.size(); i++){
+		circle(left, center_l[i], 3, Scalar(0, 255, 0), -1, 8, 0);
+		circle(left, center_l[i], rad_l[i], Scalar(0, 0, 255), 3, 8, 0);
+
+		circle(right, center_r[i], 3, Scalar(0, 255, 0), -1, 8, 0);
+		circle(right, center_r[i], rad_r[i], Scalar(0, 0, 255), 3, 8, 0);
+	}
+
+	imwrite("l.jpg", left);
+	imwrite("r.jpg", right);
+
+
+}
+
 void *stereo_process(void *arg) {
 	Mat frame_r = imread("img_right.jpg", 1);
 	Mat frame_l = imread("img_left.jpg", 1);
 
 	vector<CvPoint> center_l;
 	vector<CvPoint> center_r;
+	vector<int> radius_l, radius_r;
 	vector<char*> type_l;
 	vector<char*> type_r;
 
@@ -349,7 +398,7 @@ void *stereo_process(void *arg) {
 
 	FILE *pf = fopen("objects.txt", "w");
 
-	trackCircles(frame_l, frame_orig_l, type_l, center_l);
+	trackCircles(frame_l, frame_orig_l, type_l, center_l,radius_l);
 	trackObject(frame_l, frame_orig_l, type_l, center_l);
 	//imshow("Result_l", frame_orig_l);
 
@@ -359,11 +408,14 @@ void *stereo_process(void *arg) {
 
 	//FILE *pf_r=fopen("objects_r.txt","w");
 
-	trackCircles(frame_r, frame_orig_r, type_r, center_r);
+	trackCircles(frame_r, frame_orig_r, type_r, center_r,radius_r);
 	trackObject(frame_r, frame_orig_r, type_r, center_r);
 	//imshow("Result_r", frame_orig_r);
+	imwrite("right.jpg", frame_orig_r);
 
 	//////////////////////////////////////////////////////////////////////////
+
+	realCircles(center_l,center_r,radius_l,radius_r,frame_l,frame_r);
 
 	double qu[4][4] = { { 1., 0., 0., -2.1951644134521484e+02 }, { 0., 1., 0.,
 			-1.0995639705657959e+02 }, { 0., 0., 0., 3.1004862380124985e+02 }, {
@@ -401,7 +453,7 @@ void *stereo_process(void *arg) {
 	}
 	fclose(pf);
 
-	imwrite("right.jpg", frame_orig_r);
+
 
 	//trackObject(frame, frame_orig);
 
